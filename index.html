@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SquarifiedTreemap</title>
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="D3LayoutSquarifiedTreemaps.js"></script>
+</head>
+<body>
+
+<script>
+    width = 1000;
+    height = 800;
+    var svg_canvas = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+    root_rect = [[0, 0], [0, height], [width, height], [width, 0]];
+    //svg_canvas.append("path").attr("d", get_d_from_polygon(svg_polygon));
+    function calc_and_draw_squarified_treemap(data, rect) {
+        var st = d3.squarifiedtreemap()
+            .root_rect(root_rect)
+            .value(function(d) {return d.children? 0:1});
+        squarified_treemaps = st(data);
+        squarified_treemaps.eachAfter(function(d) {
+            svg_canvas.append("rect")
+                .attr("x", d.rect[0][0])
+                .attr("y", d.rect[0][1])
+                .attr("width", d.rect[2][0] - d.rect[1][0])
+                .attr("fill", "none")
+                .attr("stroke-width", 2)
+                .attr("stroke", "red")
+                .attr("height", d.rect[1][1] - d.rect[0][1]);
+        });
+    };
+    $.getJSON("data.json", function(data) {
+        console.log(data);
+        calc_and_draw_squarified_treemap(data, root_rect);
+    });
+
+
+
+</script>
+</body>
+</html>
